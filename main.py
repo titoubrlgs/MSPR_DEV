@@ -5,13 +5,14 @@ import socket
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBoxLayout, QHBoxLayout, QWidget, QTableWidget, QTableWidgetItem
 from PyQt5.QtCore import QTimer
-
+from PyQt5.QtGui import QIcon
 
 class SemaOS(QMainWindow):
     def __init__(self):
         super().__init__()
 
         self.setWindowTitle("SemaOS")
+        self.setWindowIcon(QIcon('./semaphorelogo.ico'))
 
         # Boutons
         self.scan_button = QPushButton("Scanner le réseau")
@@ -26,8 +27,8 @@ class SemaOS(QMainWindow):
         self.internet_status_data = QLabel()
         self.network_devices_label = QLabel("Liste des machines détectées sur le réseau :")
         self.network_devices_table = QTableWidget()
-        self.network_devices_table.setColumnCount(2)
-        self.network_devices_table.setHorizontalHeaderLabels(["IP", "Nom"])
+        self.network_devices_table.setColumnCount(3)
+        self.network_devices_table.setHorizontalHeaderLabels(["IP", "Nom", "Ports ouverts"])
 
         self.speed_test_result_label = QLabel("Résultats du dernier test de débit :")
         self.speed_test_result_data = QLabel()
@@ -88,8 +89,16 @@ class SemaOS(QMainWindow):
         self.network_devices_table.setRowCount(len(devices))
         for i, device in enumerate(devices):
             name = socket.getfqdn(device)
+            print(nm[device])
+            #port_list = nm[device]['tcp']
+            
+            #open_ports = [x for x in port_list if nm[device]['tcp'][x]['state'] == 'open']
+
             self.network_devices_table.setItem(i, 0, QTableWidgetItem(device))
             self.network_devices_table.setItem(i, 1, QTableWidgetItem(name))
+            
+            #for port in open_ports:
+             #   self.network_devices_table.setItem(i, 2, QTableWidgetItem(port))
 
     def speed_test(self):
         try:
