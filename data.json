@@ -1,0 +1,19 @@
+{
+    "SemaOS": {
+        "Version": null,
+        "Semabox": {
+            "PublicIP": null,
+            "FQDN": null,
+            "Client": null,
+            "Latency": null
+        },
+        "Scanoutput": {
+            "Hosts": {
+                "IP": null,
+                "Name": null,
+                "Debit": null,
+                "Ports": null
+            }
+        }
+    }
+}

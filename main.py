@@ -1,3 +1,5 @@
+import json
+import os
 import nmap
 import requests
 import time
@@ -7,16 +9,19 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLabel, QVBo
 from PyQt5.QtCore import QTimer
 from PyQt5.QtGui import QIcon
 
+version="1.1"
+
 class SemaOS(QMainWindow):
     def __init__(self):
         super().__init__()
-
-        self.setWindowTitle("SemaOS")
+        
+        self.setWindowTitle(f'SemaOS - version {version}')
         self.setWindowIcon(QIcon('./semaphorelogo.ico'))
 
         # Boutons
         self.scan_button = QPushButton("Scanner le réseau")
         self.speed_test_button = QPushButton("Tester le débit")
+        self.export_conf_button = QPushButton("Exporter configuration")
 
         # Labels
         self.vm_ip_label = QLabel("Adresses IP / Nom de l'hôte :")
@@ -57,6 +62,7 @@ class SemaOS(QMainWindow):
         self.speed_test_result_layout.addWidget(self.speed_test_result_data)
 
         self.main_layout.addWidget(self.scan_button)
+        self.main_layout.addWidget(self.export_conf_button)
         self.main_layout.addWidget(self.speed_test_button)
         self.main_layout.addLayout(self.vm_ip_layout)
         self.main_layout.addLayout(self.internet_ip_layout)
@@ -68,6 +74,7 @@ class SemaOS(QMainWindow):
         central_widget.setLayout(self.main_layout)
         self.setCentralWidget(central_widget)
 
+        self.export_conf_button.clicked.connect(self.exportjson)
         self.scan_button.clicked.connect(self.scan_network)
         self.speed_test_button.clicked.connect(self.speed_test)
 
@@ -94,10 +101,8 @@ class SemaOS(QMainWindow):
             #Tentative de scan de port en listant les protocoles
             for proto in nm[device].all_protocols():
                 lopenports=[]
-                #print('Protocol : %s' % proto)
                 #la ligne du dessus me retourne des arrays vides
                 lport = nm[device][proto].keys()
-                #lport.sort()
                 for port in lport:
                     if(nm[device][proto][port]['state'] == "open" and port!=0):
                         lopenports.append(str(port))
@@ -108,6 +113,8 @@ class SemaOS(QMainWindow):
             self.network_devices_table.setItem(i, 0, QTableWidgetItem(device))
             self.network_devices_table.setItem(i, 1, QTableWidgetItem(name))
             self.network_devices_table.setItem(i, 2, QTableWidgetItem(stringedlopenports))
+
+            return device
             
             
     def speed_test(self):
@@ -128,6 +135,19 @@ class SemaOS(QMainWindow):
 
         # Planification du prochain test de débit
         QTimer.singleShot(self.test_interval*1000, self.speed_test)
+
+        return ip_address
+
+    def exportjson(self):
+        with open('data.json') as json_file:
+            json_data = json.load(json_file)
+            json_data['SemaOS']['Version']=version
+            json_data['SemaOS']['Semabox']['PublicIP']=self.speed_test()
+            json_data['SemaOS']['Scanoutput']['Hosts']['IP']=self.scan_network()
+
+
+
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
