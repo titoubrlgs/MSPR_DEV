@@ -19,9 +19,9 @@ class SemaOS(QMainWindow):
         self.speed_test_button = QPushButton("Tester le débit")
 
         # Labels
-        self.vm_ip_label = QLabel("Adresses IP de la VM / Nom de la VM :")
+        self.vm_ip_label = QLabel("Adresses IP / Nom de l'hôte :")
         self.vm_ip_data = QLabel()
-        self.internet_ip_label = QLabel("IP publique de l'accès Internet / nom dns dynamique :")
+        self.internet_ip_label = QLabel("IP publique / nom DNS dynamique :")
         self.internet_ip_data = QLabel()
         self.internet_status_label = QLabel("Etat de la connexion Internet :")
         self.internet_status_data = QLabel()
@@ -84,22 +84,32 @@ class SemaOS(QMainWindow):
 
     def scan_network(self):
         nm = nmap.PortScanner()
-        nm.scan(hosts='192.168.0.0/24', arguments='-sP')
+        nm.scan(hosts='192.168.0.0/24', arguments='-sT')
         devices = nm.all_hosts()
         self.network_devices_table.setRowCount(len(devices))
         for i, device in enumerate(devices):
             name = socket.getfqdn(device)
-            print(nm[device])
-            #port_list = nm[device]['tcp']
             
-            #open_ports = [x for x in port_list if nm[device]['tcp'][x]['state'] == 'open']
-
+            
+            #Tentative de scan de port en listant les protocoles
+            for proto in nm[device].all_protocols():
+                lopenports=[]
+                #print('Protocol : %s' % proto)
+                #la ligne du dessus me retourne des arrays vides
+                lport = nm[device][proto].keys()
+                #lport.sort()
+                for port in lport:
+                    if(nm[device][proto][port]['state'] == "open" and port!=0):
+                        lopenports.append(str(port))
+            stringedlopenports= ', '.join(lopenports)
+                     #   print(True)
+            #On met les résultats quand PyQt
+            
             self.network_devices_table.setItem(i, 0, QTableWidgetItem(device))
             self.network_devices_table.setItem(i, 1, QTableWidgetItem(name))
+            self.network_devices_table.setItem(i, 2, QTableWidgetItem(stringedlopenports))
             
-            #for port in open_ports:
-             #   self.network_devices_table.setItem(i, 2, QTableWidgetItem(port))
-
+            
     def speed_test(self):
         try:
             # Test de ping
