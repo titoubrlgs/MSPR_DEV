@@ -1,5 +1,5 @@
 # MSPR DEVELOPPEMENT
-Branche Web - Application SemaLynx
+## Branche Web - Application SemaLynx
 Cette interface web permet d'afficher et de gérer les appareils connectés appelés "SemaBox", ainsi que certaines données les concernant telles que l'adresse IP, l'état de la connexion, la version de l'OS et de l'application, et le nom de la machine.
 
 # Installation
