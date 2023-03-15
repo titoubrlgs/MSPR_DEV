@@ -10,5 +10,6 @@ SemaOS permet, grâce à python-nmap, de scanner le réseau local, en inculant l
 * requests : `pip install requests`
 * PyQt5: `pip install pyqt5`
 
-
+## Lancement de l'application
+Si vous avez tous les modules d'installés avec `pip`, vous pouvez juste lancer le fichier dans son dossier. L'application apparaîtra comme un fenêtre au centre de votre écran.
 
